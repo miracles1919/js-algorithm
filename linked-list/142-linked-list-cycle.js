@@ -39,7 +39,8 @@ var detectCycle = function (head) {
 var detectCycle = function (head) {
   // 更容易理解
   let slow = fast = head;
-  while (fast !== null && fast.next !== null) {
+  while (true) {
+    if (fast === null || fast.next === null) return null;
     slow = slow.next;
     fast = fast.next.next;
 

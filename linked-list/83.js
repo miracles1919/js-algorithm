@@ -28,3 +28,24 @@ var deleteDuplicates = function (head) {
   }
   return head
 };
+
+// 快慢指针
+var deleteDuplicates = function (head) {
+
+  if (head === null) return head
+
+  let slow = fast = head
+
+  while (fast !== null) {
+
+    if (fast.val !== slow.val) {
+      slow.next = fast
+      slow = slow.next
+    } 
+    fast = fast.next
+  }
+
+  // 断开与重复元素的连接
+  slow.next = null
+  return head
+};

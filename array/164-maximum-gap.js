@@ -62,6 +62,46 @@ var maximumGap = function (nums) {
   return gap;
 };
 
+// 基数排序
+var maximumGap = function (nums) {
+  const n = nums.length;
+  if (n < 2) return 0;
+
+  const maxValue = Math.max(...nums);
+  const buf = new Array(n).fill(0);
+  let exp = 1; // 基数
+
+  while (maxValue >= exp) {
+    // 每个数字代表一个桶，统计每个桶有多少个数
+    const count = new Array(10).fill(0);
+    for (let i = 0; i < n; i++) {
+      let digit = Math.floor(nums[i] / exp) % 10;
+      count[digit]++;
+    }
+
+    // 将数量转为数组索引
+    for (let i = 1; i < count.length; i++) {
+      count[i] += count[i - 1];
+    }
+
+    // 按照当前位的数字大小排序
+    for (let i = n - 1; i >= 0; i--) {
+      let digit = Math.floor(nums[i] / exp) % 10;
+      buf[count[digit] - 1] = nums[i];
+      count[digit]--;
+    }
+
+    nums.splice(0, n, ...buf);
+
+    exp *= 10;
+  }
+
+  let ret = 0;
+  for (let i = 1; i < n; i++) {
+    ret = Math.max(ret, nums[i] - nums[i - 1]);
+  }
+  return ret;
+};
+
 console.log(maximumGap([3, 6, 9, 1]));
 console.log(maximumGap([1, 1, 1, 1]));
-

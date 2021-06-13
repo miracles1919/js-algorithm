@@ -161,6 +161,49 @@ var sortArray = function (nums) {
   return nums;
 };
 
-var nums = [5, 1, 1, 2, 0, 0];
+// 基数排序
+var sortArray = function (nums) {
+  const n = nums.length;
+  const maxValue = Math.max(...nums.map((num) => Math.abs(num)));
+  const buf = new Array(n).fill(0);
+  let exp = 1; // 基数
+
+  const getDigit = (num, exp) => {
+    // 处理负数
+    const floor = num >=0 ? Math.floor : Math.ceil
+    const digit = floor(num / exp) % 10;
+    return digit + 10
+  }
+
+  while (maxValue >= exp) {
+    // 负数用前十个桶，整数用后十个桶
+    const count = new Array(20).fill(0);
+
+    for (let i = 0; i < n; i++) {
+      let digit = getDigit(nums[i], exp)
+      count[digit]++;
+    }
+
+    for (let i = 1; i < count.length; i++) {
+      count[i] += count[i - 1];
+    }
+
+    for (let i = n - 1; i >= 0; i--) {
+      let digit = getDigit(nums[i], exp)
+      buf[count[digit] - 1] = nums[i];
+      count[digit]--;
+    }
+
+    nums.splice(0, n, ...buf);
+
+    exp *= 10;
+  }
+
+  return nums;
+};
+
+// var nums = [5, 1, 1, 2, 0, 0];
+var nums = [-1, 2, -8, -10];
+// var nums = [10, 1, 2, 8];
 // var nums = [0, 25063, 5, 25062, 7, 25061, 9, 25060, 11];
 console.log(sortArray(nums));

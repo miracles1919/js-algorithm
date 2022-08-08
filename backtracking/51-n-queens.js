@@ -1,82 +1,101 @@
 /**
+ * N 皇后
+ * 按照国际象棋的规则，皇后可以攻击与之处在同一行或同一列或同一斜线上的棋子。
  * n 皇后问题 研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
  * 给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
  * 每一种解法包含一个不同的 n 皇后问题 的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
- * 任何两个皇后都不能处于同一条横行、纵行或斜线上。
  *
  * @param {number} n
  * @return {string[][]}
  */
 
-// 遍历枚举出所有可能的选择。
-// 依次尝试这些选择：作出一种选择，并往下递归。
-// 如果这个选择产生不出正确的解，要撤销这个选择（将当前的 "Q" 恢复为 "."），回到之前的状态，并作出下一个可用的选择。
-
 var solveNQueens = function (n) {
+  const board = new Array(n).fill(0).map(() => new Array(n).fill('.'));
+  const res = [];
 
-  // 棋盘初始化
-  let board = new Array(n)
-  for (let i = 0; i < n; i++) {
-    board[i] = new Array(n).fill('.')
-  }
-  const res = []
-  backtrack(board, 0)
-
-  // 路径：board 中小于 row 的行都已经成功放置了皇后
-  // 选择列表：第 row 行的所有列都是放置皇后的选择
-  // 结束条件：row 超过 board 的最后一行
-  function backtrack(board, row) {
-    if (row === board.length) {
-      res.push(board.map(item => item.reduce((a, b) => a + b), ''))
-      return;
-    }
-
-    // let n = board[row].length;
-
-    for (let col = 0; col < n; col++) {
-      if (!isValid(board, row, col)) {
-        continue;
-      }
-
-      // 做选择
-      board[row][col] = 'Q';
-
-      // 进入下一行选择
-      backtrack(board, row + 1);
-
-      // 撤销选择
-      board[row][col] = '.';
-    }
-  }
-
-  // 是否可以在 board[row][col] 放置皇后
+  // 是否可以在(i,j)位置放皇后
   function isValid(board, row, col) {
+    // 上方
+    for (let i = 0; i <= row; i++) {
+      if (board[i][col] === 'Q') return false;
+    }
 
-    for (let i = 0; i < row; i++) {
-      // 行
-      for (let j = 0; j < n; j++) {
-        // 列
-        if (
-          board[i][j] === 'Q' &&
-          (j === col || // 同一列
-            i + j === row + col || i - j === row - col) // 对角线
-        )
-          return false;
-      }
+    // 左上方
+    for (let i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+      if (board[i][j] === 'Q') return false;
+    }
+
+    // 右上方
+    for (let i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+      if (board[i][j] === 'Q') return false;
     }
 
     return true;
   }
 
-  return res
+  function backtrack(board, i) {
+    if (i === board.length) {
+      res.push(board.map((item) => item.join('')));
+      return;
+    }
+
+    for (let j = 0; j < n; j++) {
+      if (!isValid(board, i, j)) continue;
+
+      board[i][j] = 'Q';
+      backtrack(board, i + 1);
+      board[i][j] = '.';
+    }
+  }
+
+  backtrack(board, 0);
+  return res;
 };
 
-// 回溯算法框架
-// function backtrack(...) {
-//  for (选择 in 选择列表) 
-//    做选择
-//    backtrack(...)
-//    撤销选择
-// }
+var solveNQueens = function (n) {
+  const board = new Array(n).fill(0).map(() => new Array(n).fill('.'));
+  const res = [];
 
-console.log(solveNQueens(4))
+  const cols = new Set();
+  const diag1 = new Set();
+  const diag2 = new Set();
+
+  // 是否可以在(i,j)位置放皇后
+  function isValid(row, col) {
+    // 上方
+    if (cols.has(col)) return false;
+
+    // 左上方
+    if (diag1.has(row - col)) return false;
+
+    // 右上方
+    if (diag2.has(row + col)) return false;
+    return true;
+  }
+
+  function backtrack(board, i) {
+    if (i === board.length) {
+      res.push(board.map((item) => item.join('')));
+      return;
+    }
+
+    for (let j = 0; j < n; j++) {
+      if (!isValid(i, j)) continue;
+
+      board[i][j] = 'Q';
+      cols.add(j);
+      diag1.add(i - j);
+      diag2.add(i + j);
+      backtrack(board, i + 1);
+      board[i][j] = '.';
+      cols.delete(j);
+      diag1.delete(i - j);
+      diag2.delete(i + j);
+    }
+  }
+
+  backtrack(board, 0);
+  return res;
+};
+
+console.log(solveNQueens(4));

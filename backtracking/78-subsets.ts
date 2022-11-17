@@ -4,26 +4,17 @@
  * 解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
  */
 
-/**
- * @param {number[]} nums
- * @return {number[][]}
- */
-var subsets = function (nums) {
-  const n = nums.length;
-  let res = [];
-
-  function backtrack(track, start) {
+function subsets(nums: number[]): number[][] {
+  const res: number[][] = [];
+  function backtrack(start: number, track: number[]) {
     res.push([...track]);
-
-    for (let i = start; i < n; i++) {
+    for (let i = start; i < nums.length; i++) {
+      if (track.includes(nums[i])) continue;
       track.push(nums[i]);
-      backtrack(track, i + 1);
+      backtrack(i + 1, track);
       track.pop();
     }
   }
-
-  backtrack([], 0);
+  backtrack(0, []);
   return res;
-};
-
-console.log(subsets([1, 2, 3]));
+}

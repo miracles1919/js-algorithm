@@ -10,6 +10,7 @@ function combinationSum2(candidates: number[], target: number): number[][] {
     if (sum > target) return;
 
     for (let i = start; i < candidates.length; i++) {
+      if (i > start && candidates[i] === candidates[i - 1]) continue;
       track.push(candidates[i]);
       backtrack(track, sum + candidates[i], i + 1);
       track.pop();
